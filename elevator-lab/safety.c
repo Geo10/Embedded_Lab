@@ -43,10 +43,11 @@ static void check(u8 assertion, char *name) {
 
 static void safetyTask(void *params) {
 	signed long previousPosition, currentPosition;
+	int delayCounter = 0 , assert_flag = 1;
   s16 timeSinceStopPressed = -1;
 
   xLastWakeTime = xTaskGetTickCount();
-
+  currentPosition = getCarPosition();
   for (;;) {
     // Environment assumption 1: the doors can only be opened if
 	//                           the elevator is at a floor and
@@ -57,9 +58,23 @@ static void safetyTask(void *params) {
 
 	// The elevator moves at a maximum speed of 50cm/s
 		
-		currentPosition = getCarPosition();\
-		printf("currentPosition: %ld\n", currentPosition);
-	check(1, "env2");
+		
+		//printf("currentPosition: %ld\n", currentPosition);
+		
+		
+	
+		if ( delayCounter == 10 ){
+			currentPosition = getCarPosition();
+			delayCounter = 1;
+		  if (currentPosition - previousPosition > 5){			 
+			   assert_flag = 0;	
+			}				
+		}else if ( delayCounter < 10 )
+		      delayCounter++;
+		
+	   
+		  previousPosition = currentPosition;
+	 check(assert_flag, "env2");
 
 	// fill in environment assumption 3
 	check(1, "env3");
