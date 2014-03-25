@@ -43,7 +43,7 @@ static void check(u8 assertion, char *name) {
 
 static void safetyTask(void *params) {
 	signed long previousPosition, currentPosition;
-	int delayCounter = 0 , assert_flag = 1;
+	int delayCounter = 0 , arrivedFloor1 = 0 , arrivedFloor2 = 0, arrivedFloor3 = 0, assert_flag = 1;
   s16 timeSinceStopPressed = -1;
 
   xLastWakeTime = xTaskGetTickCount();
@@ -63,10 +63,10 @@ static void safetyTask(void *params) {
 		
 		
 	
-		if ( delayCounter == 10 ){
+		if ( delayCounter == 8 ){
 			currentPosition = getCarPosition();
 			delayCounter = 1;
-		  if (currentPosition - previousPosition > 5){			 
+		  if (currentPosition - previousPosition > 4){			 
 			   assert_flag = 0;	
 			}				
 		}else if ( delayCounter < 10 )
@@ -77,8 +77,22 @@ static void safetyTask(void *params) {
 	 check(assert_flag, "env2");
 
 	// fill in environment assumption 3
-	check(1, "env3");
-
+		
+//		arrivedFloor1 = 1;
+//		arrivedFloor2 = 1;
+//		arrivedFloor3 = 1;	 
+	if (AT_FLOOR)	{
+		if (!(getCarPosition() > -1) && (getCarPosition() < 1 )) 
+			 arrivedFloor1 = 0;
+		else if ((getCarPosition() > 399) && (getCarPosition() < 401))
+			 arrivedFloor2 = 1;
+		else if ((getCarPosition() > 799) && (getCarPosition() < 801))
+		   arrivedFloor3 = 1;	 
+  }
+	
+	check(!AT_FLOOR || (arrivedFloor1 || arrivedFloor2 || arrivedFloor3), "env3");
+	
+	
 	// fill in your own environment assumption 4
 	check(1, "env4");
 

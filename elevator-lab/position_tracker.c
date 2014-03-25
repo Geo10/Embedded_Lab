@@ -36,7 +36,7 @@ static void positionTrackerTask(void *params) {
 		}	  
 		previousPinSignal = currentPinSignal;
 	  
-	//	printf("positionTracker->position: %ld\n", positionTracker->position);
+		printf("positionTracker->position: %ld\n", positionTracker->position);
   vTaskDelayUntil(&xLastWakeTime, positionTracker->pollingPeriod);
   }
 }
